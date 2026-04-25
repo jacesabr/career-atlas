@@ -601,27 +601,27 @@ export default function CareerPlannerMockup() {
           "radial-gradient(circle at 20% 10%, rgba(120,80,40,0.05), transparent 40%), radial-gradient(circle at 80% 90%, rgba(40,40,80,0.05), transparent 40%)",
       }}
     >
-      {/* Persistent design-mockup banner — visible on every screen except the map itself */}
-      {screen !== "appMap" && (
-        <button
-          onClick={() => setScreen("appMap")}
-          className="flex w-full items-center justify-between gap-6 border-b-4 border-dashed border-stone-900/50 bg-amber-50 px-8 py-6 text-left transition hover:bg-amber-100"
-          title="Open the design map"
-        >
-          <div className="flex items-center gap-5">
-            <MapIcon className="h-10 w-10 shrink-0 text-stone-700" strokeWidth={1.25} />
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-stone-600">
-                Design mockup · for client preview
-              </p>
-              <p className="mt-1 font-serif text-2xl leading-tight text-stone-900">
-                Click here to see the map of how we are designing the site
-              </p>
-            </div>
+      {/* Persistent design-mockup banner — visible on every screen, including the map itself. */}
+      <button
+        onClick={() => setScreen("appMap")}
+        className="flex w-full items-center justify-between gap-6 border-b-4 border-dashed border-stone-900/50 bg-amber-50 px-8 py-6 text-left transition hover:bg-amber-100"
+        title="Open the design map"
+      >
+        <div className="flex items-center gap-5">
+          <MapIcon className="h-10 w-10 shrink-0 text-stone-700" strokeWidth={1.25} />
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-stone-600">
+              Design mockup · for client preview
+            </p>
+            <p className="mt-1 font-serif text-2xl leading-tight text-stone-900">
+              {screen === "appMap"
+                ? "You're on the design map · click any screen to jump in"
+                : "Click here to see the map of how we are designing the site"}
+            </p>
           </div>
-          <ArrowRight className="h-6 w-6 shrink-0 text-stone-700" strokeWidth={1.5} />
-        </button>
-      )}
+        </div>
+        <ArrowRight className="h-6 w-6 shrink-0 text-stone-700" strokeWidth={1.5} />
+      </button>
       <div className={`mx-auto px-6 py-10 ${wide ? "max-w-6xl" : "max-w-4xl"}`}>
         <header className="mb-12 flex items-center justify-between border-b border-stone-400/40 pb-4">
           <button
