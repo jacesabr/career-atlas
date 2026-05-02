@@ -15,7 +15,10 @@ import {
   Clock,
   Map as MapIcon,
   Calendar,
+  Phone,
 } from "lucide-react";
+import LeadFollowupPage from "./LeadFollowup.jsx";
+import StudentIntakeFlow from "./StudentIntake.jsx";
 
 // ============================================================
 // Static config
@@ -480,10 +483,10 @@ const counsellorWorkload = (counsellor, students) => {
 // Main app
 // ============================================================
 export default function CareerPlannerMockup() {
-  // screen: persona | studentLogin | studyPath | dashboard | staffLogin | adminPanel | counsellorPanel
+  // screen: persona | studentLogin | intake | studyPath | dashboard | staffLogin | adminPanel | counsellorPanel
   const [screen, setScreen] = useState("persona");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("student");
+  const [password, setPassword] = useState("student");
   const [paths, setPaths] = useState([{ program: "", university: "" }]);
 
   // Staff side
@@ -635,7 +638,7 @@ export default function CareerPlannerMockup() {
           {showAuthNav && (
             <nav className="flex items-center gap-1 text-xs uppercase tracking-[0.2em]">
               <button
-                onClick={() => setScreen("studentLogin")}
+                onClick={() => setScreen("intake")}
                 className="flex items-center gap-1.5 px-3 py-2 text-stone-700 transition hover:text-stone-900"
               >
                 <GraduationCap className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -677,7 +680,7 @@ export default function CareerPlannerMockup() {
           </p>
 
           <button
-            onClick={() => setScreen("studentLogin")}
+            onClick={() => setScreen("intake")}
             className="mt-10 inline-flex items-center gap-2 border border-stone-900 bg-stone-900 px-6 py-3 text-sm uppercase tracking-[0.2em] text-stone-50 transition hover:bg-stone-800"
           >
             Book a free career planning session <ArrowRight className="h-4 w-4" />
@@ -688,7 +691,7 @@ export default function CareerPlannerMockup() {
         </div>
 
         {/* Editorial magazine content — the educational/entertainment funnel */}
-        <MagazineLanding onSignup={() => setScreen("studentLogin")} />
+        <MagazineLanding onSignup={() => setScreen("intake")} />
       </Shell>
     );
   }
@@ -735,7 +738,7 @@ export default function CareerPlannerMockup() {
           <button
             onClick={() => {
               setCurrentStudentId(null);
-              setScreen("studyPath");
+              setScreen("intake");
             }}
             className="mt-12 inline-flex items-center gap-2 border border-stone-900 bg-stone-900 px-6 py-3 text-sm uppercase tracking-[0.2em] text-stone-50 transition hover:bg-stone-800"
           >
@@ -789,6 +792,17 @@ export default function CareerPlannerMockup() {
           </div>
         </div>
       </Shell>
+    );
+  }
+
+  // ---------- Student Intake (one-question-at-a-time interview) ----------
+  if (screen === "intake") {
+    return (
+      <StudentIntakeFlow
+        studentName={username || "student"}
+        onComplete={() => setScreen("dashboard")}
+        onExit={() => setScreen("persona")}
+      />
     );
   }
 
@@ -1068,6 +1082,11 @@ export default function CareerPlannerMockup() {
         />
       </Shell>
     );
+  }
+
+  // ---------- Lead followup ----------
+  if (screen === "leadFollowup") {
+    return <LeadFollowupPage onExit={() => setScreen("appMap")} />;
   }
 
   // ---------- Counsellor panel ----------
@@ -3255,7 +3274,9 @@ function AppMap({
     { id: "studyPath", label: "Study path", role: "student", row: 3, col: 1, icon: "↦",
       desc: "Program / Univ / Country (multi-row)", connectsTo: ["dashboard"], thumbType: "wireframe" },
     { id: "adminPanel", label: "Admin panel", role: "staff", row: 3, col: 3, icon: "⊞",
-      desc: "All students · assign · message · matrix", connectsTo: ["studentDetail"], thumbType: "live" },
+      desc: "All students · assign · message · matrix", connectsTo: ["studentDetail", "leadFollowup"], thumbType: "live" },
+    { id: "leadFollowup", label: "Lead followup", role: "staff", row: 2, col: 4, icon: "☎",
+      desc: "New inquiries · assign counsellor · auto-notify", connectsTo: ["adminPanel"], thumbType: "wireframe" },
     { id: "counsellorPanel", label: "Counsellor panel", role: "staff", row: 3, col: 4, icon: "▤",
       desc: "Your assigned students · chat", connectsTo: ["studentDetail"], thumbType: "live", needs: "counsellor" },
     { id: "dashboard", label: "Student dashboard", role: "student", row: 4, col: 1, icon: "▦",
@@ -3785,6 +3806,26 @@ function ScreenWireframe({ id }) {
               <rect x="14" y={27 + i * 18} width="80" height="2" fill={fill} />
               <rect x="120" y={22 + i * 18} width="40" height="3" fill="#10b981" />
               <rect x="170" y={22 + i * 18} width="14" height="4" fill="#059669" />
+            </g>
+          ))}
+        </svg>
+      );
+    case "leadFollowup":
+      return (
+        <svg {...common} aria-hidden="true">
+          <rect x="10" y="6" width="60" height="4" fill={stroke} />
+          {/* Stats */}
+          {[0, 1, 2, 3].map((i) => (
+            <rect key={i} x={120 + i * 18} y="6" width="14" height="6" fill={i === 1 ? "#d97706" : fill} />
+          ))}
+          {/* Lead rows with assign + status pills */}
+          {[0, 1, 2, 3].map((i) => (
+            <g key={i}>
+              <rect x="10" y={20 + i * 14} width="180" height="12" fill="none" stroke={stroke} strokeOpacity="0.4" />
+              <rect x="14" y={24 + i * 14} width="40" height="3" fill={fill} />
+              <rect x="62" y={24 + i * 14} width="34" height="3" fill={i % 2 === 0 ? "#dc2626" : "#d97706"} />
+              <rect x="104" y={24 + i * 14} width="40" height="3" fill={i === 2 ? "#fbbf24" : fill} />
+              <rect x="152" y={24 + i * 14} width="34" height="4" fill={i === 2 ? "#d97706" : "#10b981"} />
             </g>
           ))}
         </svg>
